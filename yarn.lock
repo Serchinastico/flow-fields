@@ -409,7 +409,7 @@
     "@parcel/utils" "2.9.3"
     posthtml "^0.16.4"
 
-"@parcel/plugin@*", "@parcel/plugin@2.9.3":
+"@parcel/plugin@2.9.3":
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.9.3.tgz#90e9a9482fa27735494372f5643db01abcf3fdb6"
   integrity sha512-qN85Gqr2GMuxX1dT1mnuO9hOcvlEv1lrYrCxn7CJN2nUhbwcfG+LEvcrCzCOJ6XtIHm+ZBV9h9p7FfoPLvpw+g==
@@ -1368,13 +1368,6 @@ ordered-binary@^1.4.0:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/ordered-binary/-/ordered-binary-1.4.1.tgz#205cb6efd6c27fa0ef4eced994a023e081cdc911"
   integrity sha512-9LtiGlPy982CsgxZvJGNNp2/NnrgEr6EAyN3iIEP3/8vd3YLgAZQHbQ75ZrkfBRGrNg37Dk3U6tuVb+B4Xfslg==
-
-parcel-transformer-meta-image@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/parcel-transformer-meta-image/-/parcel-transformer-meta-image-1.0.4.tgz#c87f6da9f425714429614c0b52f16f0a6f0279b7"
-  integrity sha512-BmaTBVB78/cTfEPt/lt896JbbLGS/52fmzDXRLfiK8j6sTkZ6zTb4b9F8hzwfpOJdA0tej9yYoa912Wb/x1FQA==
-  dependencies:
-    "@parcel/plugin" "*"
 
 parcel@^2.9.3:
   version "2.9.3"
