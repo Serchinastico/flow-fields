@@ -51,7 +51,6 @@ jobs:
         with:
           path: ./dist
 
-  # Deployment job
   deploy:
     environment:
       name: github-pages
