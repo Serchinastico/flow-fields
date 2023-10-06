@@ -1,0 +1,15 @@
+{
+  "name": "flow-fields",
+  "version": "1.0.0",
+  "description": "Playing with flow fields",
+  "source": "index.html",
+  "author": "Serchinastico",
+  "private": true,
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "parcel": "^2.9.3"
+  }
+}

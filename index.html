@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Flow Fields</title>
+    <meta name="description" content="Flow Fields experiment" />
+    <meta name="author" content="Serchinastico" />
+
+    <link rel="stylesheet" href="style/tachyons.css" />
+    <link rel="stylesheet" href="style/foundation.css" />
+
+    <script type="module" src="script/index.js"></script>
+  </head>
+
+  <body>
+    <canvas id="flow-canvas" class="absolute"></canvas>
+    <canvas id="canvas" class="relative"></canvas>
+
+    <div
+      id="toggle-flow-visibility"
+      class="absolute left-0 bottom-0 bg-white br3 ma2 b--black-40 ba flex justify-center grow pointer"
+    >
+      <img id="turn-on" class="ma2" width="24" src="img/eye.svg" />
+      <img id="turn-off" class="ma2 dn" width="24" src="img/eye-off.svg" />
+    </div>
+
+    <div
+      class="absolute left-0 top-0 flex flex-column bg-white ba br4 b--black-40 ma2 z-1 h-75"
+    >
+      <img
+        id="minimize"
+        class="self-end ma3 grow pointer dn"
+        width="24"
+        src="img/minimize.svg"
+      />
+      <img
+        id="maximize"
+        class="self-end ma3 grow pointer"
+        width="24"
+        src="img/maximize.svg"
+      />
+
+      <form id="form" class="flex-column pb4 ph4 flex mw6 overflow-scroll">
+        <h2 class="tc mb0">Simulation</h2>
+
+        <label for="max-steps" class="b db mb2">Max. Steps</label>
+        <input
+          id="max-steps"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Max. Steps"
+          type="number"
+          aria-label="Max. Steps"
+          value="1000"
+        />
+        <small class="f6 black-60 db mt1"
+          >Use 0 if you don't want it to ever stop</small
+        >
+
+        <label for="num-points" class="f6 b db mb2 mt3">Particle count</label>
+        <input
+          id="num-points"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Particle count"
+          type="number"
+          aria-label="Particle count"
+          value="10000"
+        />
+
+        <label for="force" class="f6 b db mb2 mt3">Force</label>
+        <input
+          id="force"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Force"
+          type="number"
+          aria-label="Force"
+          value="1"
+        />
+        <small class="f6 black-60 db mt1"
+          >Strength of the flow vectors to pull particles. The higher this
+          value, the faster particles will travel.</small
+        >
+
+        <label for="force-reduction" class="f6 b db mb2 mt3"
+          >Force reduction</label
+        >
+        <input
+          id="force-reduction"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Force reduction"
+          type="number"
+          aria-label="Force reduction"
+          value="0.001"
+        />
+        <small class="f6 black-60 db mt1"
+          >Anything above 0 will make flow vectors strength to weaken over
+          time</small
+        >
+
+        <label for="friction" class="f6 b db mb2 mt3">Friction</label>
+        <input
+          id="friction"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Friction"
+          type="number"
+          aria-label="Friction"
+          value="0.05"
+        />
+        <small class="f6 black-60 db mt1"
+          >Friction reduces the speed of particles so that they don't go flying
+          around</small
+        >
+
+        <h2 class="tc mt4 mb0">Rendering</h2>
+
+        <label for="pen-width" class="f6 b db mb2 mt3">Pen Width</label>
+        <input
+          id="pen-width"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Pen Width"
+          type="number"
+          aria-label="Pen Width"
+          value="0.1"
+        />
+
+        <label for="color-palette" class="f6 b db mb2 mt3">Color palette</label>
+        <select
+          id="color-palette"
+          class="br2 ba b--black-40 pa2"
+          type="number"
+          aria-label="Color palette"
+        >
+          <option value="black">Black</option>
+          <option value="magenta">Magenta</option>
+          <option value="cyan">Cyan</option>
+          <option value="yellow">Yellow</option>
+          <option value="spectral">Spectral</option>
+          <option value="forest">Forest</option>
+          <option value="pastel">Pastel</option>
+          <option value="fire" selected>Fire</option>
+        </select>
+
+        <h2 class="tc mt4 mb0">Flow Field</h2>
+
+        <label for="flow-field-function" class="f6 b db mb2 mt3"
+          >Function</label
+        >
+        <select
+          id="flow-field-function"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Flow Field"
+          type="number"
+          aria-label="Flow Field"
+        >
+          <option value="custom">Custom</option>
+          <option value="perlin" selected>Perlin Noise</option>
+          <option value="attractor">Clifford Attractor</option>
+        </select>
+
+        <div id="resolution-container" class="flex flex-column">
+          <label for="resolution" class="f6 b db mb2 mt3">Resolution</label>
+          <input
+            id="resolution"
+            class="br2 ba b--black-40 pa2"
+            placeholder="Resolution"
+            type="number"
+            aria-label="Resolution"
+            value="0.005"
+          />
+        </div>
+
+        <div id="custom-flow-field-function-container" class="flex-column dn">
+          <label for="custom-flow-field-function" class="f6 b db mb2 mt3"
+            >Custom flow field function</label
+          >
+          <input
+            id="custom-flow-field-function"
+            class="br2 ba b--black-40 pa2"
+            placeholder="Custom flow field function"
+            type="text"
+            aria-label="Custom flow field function"
+            value="(Math.sin(x * 0.01) + Math.sin(y * 0.01)) * Math.PI * 2"
+          />
+          <small class="f6 black-60 db mt1"
+            >A JavaScript function body that takes two parameters, x and y, and
+            returns the angle (in degrees) for the flow vector in that
+            position.</small
+          >
+        </div>
+
+        <button
+          id="restart"
+          class="f6 link dim br3 ph3 pv2 mb2 dib white bg-black mt4"
+          type="button"
+        >
+          Restart
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
