@@ -1,4 +1,5 @@
-import * as noise from "./noise";
+import * as noise from "./lib/noise";
+import rnd from "./random";
 
 /**
  * Defines a flow field given a bitmap. The resulting vector for a specific
@@ -33,7 +34,7 @@ const getFlowVectorFromBitmapFn =
  * @link https://en.wikipedia.org/wiki/Perlin_noise
  */
 const getPerlinNoiseVectorFn = ({ resolution }) => {
-  noise.seed(Math.random());
+  noise.seed(rnd.random());
 
   return (x, y) => {
     return noise.perlin2(x * resolution, y * resolution) * Math.PI * 2;
@@ -54,10 +55,10 @@ const getPerlinNoiseVectorFn = ({ resolution }) => {
  * @link https://paulbourke.net/fractals/clifford/
  */
 const getAttractorVectorFn = ({ resolution }) => {
-  const a = Math.random() * 4 - 2;
-  const b = Math.random() * 4 - 2;
-  const c = Math.random() * 4 - 2;
-  const d = Math.random() * 4 - 2;
+  const a = rnd.random() * 4 - 2;
+  const b = rnd.random() * 4 - 2;
+  const c = rnd.random() * 4 - 2;
+  const d = rnd.random() * 4 - 2;
 
   return (x, y) => {
     // scale down x and y

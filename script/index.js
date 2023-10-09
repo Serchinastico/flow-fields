@@ -3,19 +3,10 @@
  */
 
 import { form } from "./form";
-
-const fillPoints = (points, count) => {
-  points.splice(0, points.length);
-
-  for (let i = 0; i < count; i += 1) {
-    points.push({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      vx: 0,
-      vy: 0,
-    });
-  }
-};
+import { renderFrame } from "./render";
+import { toSvg } from "./svg";
+import { createParticles } from "./simulation";
+import { downloadFile } from "./download";
 
 const main = () => {
   /**
@@ -23,8 +14,8 @@ const main = () => {
    */
   const canvas = document.querySelector("#canvas");
   const context = canvas.getContext("2d", { willReadFrequently: true });
-  const width = (canvas.width = window.innerWidth);
-  const height = (canvas.height = window.innerHeight);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   const flowCanvas = document.querySelector("#flow-canvas");
   const flowContext = flowCanvas.getContext("2d", { willReadFrequently: true });
@@ -33,17 +24,14 @@ const main = () => {
 
   let renderFrameId = -1;
   const f = form();
-
-  const points = [];
   let step = 0;
-  fillPoints(points, f.getConfig().numPoints);
-  context.lineWidth = f.getConfig().penWidth;
+  let particles = createParticles(f.getConfig().numPoints);
 
   document.querySelector("#restart").addEventListener("click", () => {
     f.refreshConfig();
 
     step = 0;
-    fillPoints(points, f.getConfig().numPoints);
+    particles = createParticles(f.getConfig().numPoints);
     context.lineWidth = f.getConfig().penWidth;
 
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -94,53 +82,21 @@ const main = () => {
       }
     });
 
-  let currentColor = f.getConfig().gradientFn(step / f.getConfig().maxSteps);
+  document.querySelector("#save").addEventListener("click", () => {
+    const svg = toSvg(f.getConfig());
+    downloadFile(svg, "output.svg", "image/svg+xml");
+  });
+
   const render = () => {
-    points.forEach((point) => {
-      /**
-       * 1. Update the point velocity according to its position
-       *    following the field vectors
-       * 2. Move the point according to its velocity and trace a path
-       * 3. Reduce the velocity of the point (simulating friction)
-       * 4. Update point position if it went out of bounds making
-       *    the plane a continuum
-       */
-      const value = f.getConfig().flowFieldFn(point.x, point.y);
-      context.strokeStyle = currentColor;
-
-      point.vx += Math.cos(value) * f.getConfig().force;
-      point.vy += Math.sin(value) * f.getConfig().force;
-
-      context.beginPath();
-      context.moveTo(point.x, point.y);
-
-      point.x += point.vx;
-      point.y += point.vy;
-      context.lineTo(point.x, point.y);
-      context.stroke();
-
-      point.vx *= 1 - f.getConfig().friction;
-      point.vy *= 1 - f.getConfig().friction;
-
-      if (point.x > width) point.x = 0;
-      if (point.y > height) point.y = 0;
-      if (point.x < 0) point.x = width;
-      if (point.y < 0) point.y = height;
-    });
+    renderFrame(context, step, particles, f.getConfig());
 
     step += 1;
-
-    currentColor = f.getConfig().gradientFn(step / f.getConfig().maxSteps);
-
     if (f.getConfig().maxSteps === 0 || step < f.getConfig().maxSteps) {
       renderFrameId = requestAnimationFrame(render);
     }
-
-    if (f.getConfig().forceReduction > 0) {
-      f.getConfig().force *= 1 - f.getConfig().forceReduction;
-    }
   };
 
+  context.lineWidth = f.getConfig().penWidth;
   renderFrameId = requestAnimationFrame(render);
 };
 

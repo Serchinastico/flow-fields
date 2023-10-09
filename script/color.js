@@ -1,4 +1,4 @@
-import chroma from "./chroma";
+import chroma from "./lib/chroma";
 
 const easeOutSine = (x) => {
   return Math.sin((x * Math.PI) / 2);

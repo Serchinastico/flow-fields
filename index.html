@@ -40,9 +40,20 @@
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicon_16.png" />
     <link rel="shortcut icon" href="img/favicon.ico" />
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style/tachyons.css" />
     <link rel="stylesheet" href="style/foundation.css" />
 
+    <!-- JS -->
+    <script src="script/lib/seedrandom.js"></script>
     <script type="module" src="script/index.js"></script>
   </head>
 
@@ -50,16 +61,28 @@
     <canvas id="flow-canvas" class="absolute"></canvas>
     <canvas id="canvas" class="relative"></canvas>
 
-    <div
-      id="toggle-flow-visibility"
-      class="absolute left-0 bottom-0 bg-white br3 ma2 b--black-40 ba flex justify-center grow pointer"
-    >
-      <img id="turn-on" class="ma2" width="24" src="img/eye.svg" />
-      <img id="turn-off" class="ma2 dn" width="24" src="img/eye-off.svg" />
+    <div class="absolute left-0 bottom-0 flex flex-row">
+      <div
+        class="bg-white br3 ma2 ma2 b--black-40 ba flex justify-center grow pointer"
+      >
+        <img id="restart" class="ma2" width="24" src="img/refresh-cw.svg" />
+      </div>
+      <div
+        id="toggle-flow-visibility"
+        class="bg-white br3 ma2 ml0 b--black-40 ba flex justify-center grow pointer"
+      >
+        <img id="turn-on" class="ma2" width="24" src="img/eye.svg" />
+        <img id="turn-off" class="ma2 dn" width="24" src="img/eye-off.svg" />
+      </div>
+      <div
+        class="bg-white br3 ma2 ml0 b--black-40 ba flex justify-center grow pointer"
+      >
+        <img id="save" class="ma2" width="24" src="img/save.svg" />
+      </div>
     </div>
 
     <div
-      class="absolute left-0 top-0 flex flex-column bg-white ba br4 b--black-40 ma2 z-1 h-75-ns"
+      class="absolute left-0 top-0 flex flex-column bg-white ba br4 b--black-40 ma2 z-1 maxh-75"
     >
       <img
         id="minimize"
@@ -75,7 +98,8 @@
       />
 
       <form id="form" class="flex-column pb4 ph4 flex mw6 overflow-scroll">
-        <h2 class="tc mb0">Simulation</h2>
+        <h1 class="mt0 mb0 ttu fw9">Settings</h1>
+        <h2 class="">Simulation</h2>
 
         <label for="max-steps" class="b db mb2">Max. Steps</label>
         <input
@@ -97,7 +121,7 @@
           placeholder="Particle count"
           type="number"
           aria-label="Particle count"
-          value="10000"
+          value="1000"
         />
 
         <label for="force" class="f6 b db mb2 mt3">Force</label>
@@ -144,7 +168,31 @@
           around</small
         >
 
-        <h2 class="tc mt4 mb0">Rendering</h2>
+        <label for="seed" class="f6 b db mb2 mt3">Seed</label>
+        <input
+          id="seed"
+          class="br2 ba b--black-40 pa2"
+          placeholder="Seed"
+          type="number"
+          aria-label="Seed"
+          value="123975"
+        />
+        <small class="f6 black-60 db mt1"
+          >The seed used to generate randomness in the simulation</small
+        >
+
+        <div class="flex flex-row items-center mt2">
+          <label for="randomize-seed" class="f6 b db mb2 mt3"
+            >Randomize seed</label
+          >
+          <input id="randomize-seed" class="ml3 mt1" type="checkbox" checked />
+        </div>
+        <small class="f6 black-60 db mt1"
+          >When checked, it will generate a new seed with every new
+          simulation</small
+        >
+
+        <h2 class="mt4">Rendering</h2>
 
         <label for="pen-width" class="f6 b db mb2 mt3">Pen Width</label>
         <input
@@ -153,7 +201,7 @@
           placeholder="Pen Width"
           type="number"
           aria-label="Pen Width"
-          value="0.1"
+          value="0.3"
         />
 
         <label for="color-palette" class="f6 b db mb2 mt3">Color palette</label>
@@ -163,17 +211,17 @@
           type="number"
           aria-label="Color palette"
         >
-          <option value="black">Black</option>
+          <option value="black" selected>Black</option>
           <option value="magenta">Magenta</option>
           <option value="cyan">Cyan</option>
           <option value="yellow">Yellow</option>
           <option value="spectral">Spectral</option>
           <option value="forest">Forest</option>
           <option value="pastel">Pastel</option>
-          <option value="fire" selected>Fire</option>
+          <option value="fire">Fire</option>
         </select>
 
-        <h2 class="tc mt4 mb0">Flow Field</h2>
+        <h2 class="mt4">Flow Field</h2>
 
         <label for="flow-field-function" class="f6 b db mb2 mt3"
           >Function</label
@@ -186,8 +234,8 @@
           aria-label="Flow Field"
         >
           <option value="custom">Custom</option>
-          <option value="perlin" selected>Perlin Noise</option>
-          <option value="attractor">Clifford Attractor</option>
+          <option value="perlin">Perlin Noise</option>
+          <option value="attractor" selected>Clifford Attractor</option>
         </select>
 
         <div id="resolution-container" class="flex flex-column">
@@ -220,14 +268,6 @@
             position.</small
           >
         </div>
-
-        <button
-          id="restart"
-          class="f6 link dim br3 ph3 pv2 mb2 dib white bg-black mt4"
-          type="button"
-        >
-          Restart
-        </button>
       </form>
     </div>
   </body>

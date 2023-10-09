@@ -1,6 +1,7 @@
 import { getGradient } from "./color";
 import { getFlowField } from "./flow";
 import { hideNode, showNode } from "./dom";
+import rnd from "./random";
 
 export const form = () => {
   const form = document.querySelector("#form");
@@ -20,8 +21,20 @@ export const form = () => {
   const customFlowFieldFunctionInput = document.querySelector(
     "#custom-flow-field-function"
   );
+  const seedInput = document.querySelector("#seed");
+  const randomizeSeedInput = document.querySelector("#randomize-seed");
 
-  const getConfig = () => {
+  const resetSeed = () => {
+    if (randomizeSeedInput.checked) {
+      rnd.resetSeed();
+
+      seedInput.value = rnd.getSeed();
+    } else {
+      rnd.setSeed(rnd.getSeed());
+    }
+  };
+
+  const readConfig = () => {
     const baseConfig = {
       maxSteps: Number.parseInt(maxStepsInput.value),
       numPoints: Number.parseInt(numPointsInput.value),
@@ -33,6 +46,7 @@ export const form = () => {
       flowFieldFunction: flowFieldFunctionInput.value,
       resolution: Number.parseFloat(resolutionInput.value),
       customFlowFieldFunction: customFlowFieldFunctionInput.value,
+      seed: Number.parseInt(seedInput.value),
     };
 
     baseConfig.flowFieldFn = getFlowField(baseConfig.flowFieldFunction, {
@@ -43,7 +57,8 @@ export const form = () => {
     return baseConfig;
   };
 
-  let config = getConfig();
+  resetSeed();
+  let config = readConfig();
 
   flowFieldFunctionInput.addEventListener("change", () => {
     switch (flowFieldFunctionInput.value) {
@@ -75,6 +90,9 @@ export const form = () => {
 
   return {
     getConfig: () => config,
-    refreshConfig: () => (config = getConfig()),
+    refreshConfig: () => {
+      resetSeed();
+      config = readConfig();
+    },
   };
 };
