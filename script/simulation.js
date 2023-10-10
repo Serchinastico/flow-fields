@@ -3,7 +3,7 @@ import rnd from "./random";
 /**
  * Simulates the next tick of the particle given its position
  * and velocity. This procedure mutates the particle in place for
- * performance reasons, this is why it does not return anything
+ * performance reasons.
  * @param {{x: number, y: number, vx: number, vy: number}} particle
  * @param {Object} config
  * @returns {{didWrap: boolean}} Returns an object with the results of the simulation

@@ -2,8 +2,9 @@ import simplify from "./lib/simplifyPath";
 import * as fitCurve from "./lib/fitCurve";
 import { simulateTick } from "./simulation";
 import { createParticles } from "./simulation";
+import rnd from "./random";
 
-const SIMPLIFY_TOLERANCE = 2;
+const SIMPLIFY_TOLERANCE = 10;
 const CURVE_FITTING_ERROR = 200;
 
 /**
@@ -11,6 +12,8 @@ const CURVE_FITTING_ERROR = 200;
  * @returns {string} SVG contents
  */
 export const toSvg = (config) => {
+  rnd.reset();
+
   const particles = createParticles(config.numPoints);
   const paths = [];
 
@@ -29,12 +32,14 @@ export const toSvg = (config) => {
          * The particle went around the screen so we finish the
          * current path and create a new one to prevent ugly artifacts
          */
-        paths.push([]);
+        paths.push([{ x: particle.x, y: particle.y }]);
         currentPathIndex += 1;
       } else {
         paths[currentPathIndex].push({ x: particle.x, y: particle.y });
       }
     }
+
+    currentPathIndex += 1;
   }
 
   const curvePaths = paths
@@ -51,6 +56,9 @@ export const toSvg = (config) => {
   for (const path of curvePaths) {
     const firstCurve = path[0];
 
+    /**
+     * @see https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+     */
     svg += `\t<path stroke-width="0.1" d="M ${firstCurve[0][0]} ${firstCurve[0][1]} `;
     for (const curve of path) {
       svg += `C ${curve[1][0]} ${curve[1][1]}, ${curve[2][0]} ${curve[2][1]}, ${curve[3][0]} ${curve[3][1]} `;

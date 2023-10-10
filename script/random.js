@@ -4,7 +4,7 @@ const rnd = () => {
   let seed = randomSeed();
   let gen = new Math.seedrandom(seed);
 
-  const resetSeed = () => {
+  const newSeed = () => {
     seed = randomSeed();
     gen = new Math.seedrandom(seed);
   };
@@ -14,7 +14,11 @@ const rnd = () => {
     gen = new Math.seedrandom(seed);
   };
 
-  return { random: () => gen(), getSeed: () => seed, setSeed, resetSeed };
+  const getSeed = () => seed;
+
+  const reset = () => setSeed(seed);
+
+  return { random: () => gen(), getSeed, setSeed, reset, newSeed };
 };
 
 export default rnd();

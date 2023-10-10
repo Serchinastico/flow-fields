@@ -26,7 +26,7 @@ export const form = () => {
 
   const resetSeed = () => {
     if (randomizeSeedInput.checked) {
-      rnd.resetSeed();
+      rnd.newSeed();
 
       seedInput.value = rnd.getSeed();
     } else {
