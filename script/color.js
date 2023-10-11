@@ -50,5 +50,13 @@ export const getGradient = (colorPalette) => {
       return getChromaScaleFromCSV(
         "#03071e, #370617, #6a040f, #9d0208, #d00000, #dc2f02, #e85d04, #f48c06, #faa307, #ffba08"
       );
+    case "ice":
+      return getChromaScaleFromCSV(
+        "#03045e, #023e8a, #0077b6, #0096c7, #00b4d8, #48cae4, #90e0ef, #ade8f4, #caf0f8"
+      );
+    case "bicolor":
+      return getChromaScaleFromCSV(
+        "#ff6d00, #ff7900, #ff8500, #ff9100, #ff9e00, #240046, #3c096c, #5a189a, #7b2cbf, #9d4edd"
+      );
   }
 };
