@@ -12,12 +12,15 @@ const main = () => {
    * @type {HTMLCanvasElement}
    */
   const canvas = document.querySelector("#canvas");
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
+  /**
+   * @type {HTMLCanvasElement}
+   */
   const flowCanvas = document.querySelector("#flow-canvas");
-  const flowContext = flowCanvas.getContext("2d", { willReadFrequently: true });
+  const flowContext = flowCanvas.getContext("2d");
   flowCanvas.width = window.innerWidth;
   flowCanvas.height = window.innerHeight;
 
@@ -43,22 +46,34 @@ const main = () => {
   });
 
   const renderFlow = () => {
+    const config = f.getConfig();
+
+    flowContext.clearRect(0, 0, config.width, config.height);
+
+    if (config.flowFieldFunction === "image") {
+      flowContext.putImageData(config.flowFieldFnData.imageData, 0, 0);
+    }
+
     const previousStrokeStyle = flowContext.strokeStyle;
     flowContext.lineWidth = 1;
-    flowContext.strokeStyle = "#222";
+    flowContext.strokeStyle = "#FA0F22";
 
-    for (let x = 0; x < window.innerWidth; x += 10) {
-      for (let y = 0; y < window.innerHeight; y += 10) {
-        const value = f
-          .getConfig()
-          .flowFieldFn(x, y, window.innerWidth, window.innerHeight);
+    for (let x = 0; x < window.innerWidth; x += 5) {
+      for (let y = 0; y < window.innerHeight; y += 5) {
+        const { force, angle } = config.flowFieldFn(
+          config.flowFieldFnData,
+          x,
+          y,
+          config.width,
+          config.height
+        );
 
         flowContext.save();
         flowContext.translate(x, y);
-        flowContext.rotate(value);
+        flowContext.rotate(angle);
         flowContext.beginPath();
         flowContext.moveTo(0, 0);
-        flowContext.lineTo(10, 0);
+        flowContext.lineTo(5 * force, 0);
         flowContext.stroke();
         flowContext.restore();
       }

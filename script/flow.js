@@ -1,28 +1,68 @@
 import * as noise from "./lib/noise";
 import rnd from "./random";
+import chroma from "./lib/chroma";
+
+export const getPixel = (imageData, x, y) => {
+  return chroma(
+    imageData.data[4 * (x + y * imageData.width)],
+    imageData.data[4 * (x + y * imageData.width) + 1],
+    imageData.data[4 * (x + y * imageData.width) + 2]
+  );
+};
 
 /**
  * Defines a flow field given a bitmap. The resulting vector for a specific
- * point in space is the average value of its Red, Green and Blue components
- * so it scales with the pixel luminosity.
+ * point in space is the result of adding all vectors for all neighbors, weighted
+ * by their different in luminance. That is, it tries to go from brigher
+ * colors to darker ones.
  *
- * @param {{bitmap: number[][][]}} data
- * @param data.bitmap Bitmap expressed as [x][y][c] where c is 0 for Red,
- * 1 for Blue and 2 for Green
- * @returns {(x: number, y: number) => number}
+ * @param {{imageData: ImageData}} data
+ * @returns {(generationData: Object, x: number, y: number, width: number, height: number) => number}
  */
-const getFlowVectorFromBitmapFn =
-  ({ bitmap }) =>
-  (x, y) => {
-    const fx = Math.min(bitmap.length - 1, Math.floor(x));
-    const fy = Math.min(bitmap[0].length - 1, Math.floor(y));
+const getFlowVectorFromImageFn = ({ imageData }) => {
+  return {
+    generationData: { imageData },
+    fn: ({ imageData }, x, y, width, height) => {
+      const px = Math.min(imageData.width - 1, Math.floor(x));
+      const py = Math.min(imageData.height - 1, Math.floor(y));
 
-    return (
-      ((bitmap[fx][fy][0] + bitmap[fx][fy][1] + bitmap[fx][fy][2]) / 3 / 256) *
-      Math.PI *
-      2
-    );
+      const luminance = getPixel(imageData, px, py).luminance();
+
+      let luminanceDirection = { x: 0, y: 0 };
+
+      for (let dx = -1; dx < 2; dx++) {
+        for (let dy = -1; dy < 2; dy++) {
+          const dpx = px + dx;
+          const dpy = py + dy;
+
+          if (dpx > 0 && dpy > 0 && dpx < width && dpy < height) {
+            const neighbourLuminance = getPixel(
+              imageData,
+              dpx,
+              dpy
+            ).luminance();
+
+            const luminanceDiff = luminance - neighbourLuminance;
+            luminanceDirection.x += luminanceDiff * dx;
+            luminanceDirection.y += luminanceDiff * dy;
+          }
+        }
+      }
+
+      const force =
+        20 *
+        Math.sqrt(
+          luminanceDirection.x * luminanceDirection.x +
+            luminanceDirection.y * luminanceDirection.y
+        );
+
+      return {
+        force,
+        angle: Math.atan2(luminanceDirection.x, luminanceDirection.y),
+      };
+    },
   };
+};
 
 /**
  * Defines a flow field using Perlin Noise with a given resolution
@@ -30,7 +70,7 @@ const getFlowVectorFromBitmapFn =
  * @param {{resolution: number}} data
  * @param data.resolution The bigger this number, the further away the noise will
  * look like (less smooth)
- * @returns {(x: number, y: number) => number}
+ * @returns {(generationData: Object, x: number, y: number) => number}
  * @link https://en.wikipedia.org/wiki/Perlin_noise
  */
 const getPerlinNoiseVectorFn = ({ resolution }) => {
@@ -40,7 +80,10 @@ const getPerlinNoiseVectorFn = ({ resolution }) => {
   return {
     generationData: { resolution },
     fn: ({ resolution }, x, y) => {
-      return noise.perlin2(x * resolution, y * resolution) * Math.PI * 2;
+      return {
+        force: 1,
+        angle: noise.perlin2(x * resolution, y * resolution) * Math.PI * 2,
+      };
     },
   };
 };
@@ -55,7 +98,7 @@ const getPerlinNoiseVectorFn = ({ resolution }) => {
  * @param {{resolution: number}} data
  * @param data.resolution The bigger this number, the further away the
  * flow field will look like
- * @returns {(x: number, y: number) => number}
+ * @returns {(generationData: Object, x: number, y: number, width: number, height: number) => number}
  * @link https://paulbourke.net/fractals/clifford/
  */
 const getAttractorVectorFn = ({ resolution }) => {
@@ -76,7 +119,7 @@ const getAttractorVectorFn = ({ resolution }) => {
       const y1 = Math.sin(b * x) + d * Math.cos(b * y);
 
       // find angle from old to new. that's the value.
-      return Math.atan2(y1 - y, x1 - x);
+      return { force: 1, angle: Math.atan2(y1 - y, x1 - x) };
     },
   };
 };
@@ -88,27 +131,27 @@ const getAttractorVectorFn = ({ resolution }) => {
  * @param data.customFn A string definining a function that
  * takes x and y as parameters and returns an angle for the
  * flow vector in that position
- * @returns {(x: number, y: number) => number}
+ * @returns {(generationData: Object, x: number, y: number, width: number, height: number) => number}
  */
 const getCustomFlowFieldFn = ({ customFn }) => {
   return {
     generationData: { customFn },
     fn: ({ customFn }, x, y, width, height) => {
       const fn = eval(`(x, y, width, height) => { return ${customFn}; }`);
-      return fn(x, y, width, height);
+      return { force: 1, angle: fn(x, y, width, height) };
     },
   };
 };
 
 /**
- * @param {"bitmap" | "perlin" | "attractor" | "custom"} type
+ * @param {"image" | "perlin" | "attractor" | "custom"} type
  * @param {Object} data Depends on the specific type you are instantiating
  * @returns {(x: number, y: number, width: number, height: number) => number}
  */
 export const getFlowField = (type, data) => {
   switch (type) {
-    case "bitmap":
-      return getFlowVectorFromBitmapFn(data);
+    case "image":
+      return getFlowVectorFromImageFn(data);
     case "perlin":
       return getPerlinNoiseVectorFn(data);
     case "attractor":

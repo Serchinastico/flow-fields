@@ -60,6 +60,9 @@
     <canvas id="flow-canvas" class="absolute"></canvas>
     <canvas id="canvas" class="relative"></canvas>
 
+    <img class="dn" id="image" width="500" />
+    <canvas class="dn" id="image-canvas" class="relative"></canvas>
+
     <div class="absolute left-0 bottom-0 flex flex-row">
       <div
         id="restart"
@@ -238,6 +241,7 @@
         >
           <option value="perlin" selected>Perlin Noise</option>
           <option value="attractor">Clifford Attractor</option>
+          <option value="image">Image</option>
           <option value="custom">Custom</option>
         </select>
 
@@ -269,6 +273,23 @@
             >A JavaScript function body that takes two parameters, x and y, and
             returns the angle (in degrees) for the flow vector in that
             position.</small
+          >
+        </div>
+
+        <div id="source-image-container" class="flex-column dn">
+          <label for="source-image" class="f6 b db mb2 mt3">Image</label>
+          <input
+            id="source-image"
+            class="br2 ba b--black-40 pa2"
+            placeholder="Image"
+            type="file"
+            aria-label="Image"
+            value="0.005"
+          />
+          <small class="f6 black-60 db mt1"
+            >This image will be used to determine the flow field. Vectors in the
+            field will point towards darker zones using the luminance of each
+            pixel and its surrounding neighbors.</small
           >
         </div>
       </form>

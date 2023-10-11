@@ -17,7 +17,7 @@ export const simulateTick = (particle, config) => {
    * 4. Update particle position if it went out of bounds making
    *    the plane a continuum
    */
-  const value = config.flowFieldFn(
+  const { force, angle } = config.flowFieldFn(
     config.flowFieldFnData,
     particle.x,
     particle.y,
@@ -25,8 +25,8 @@ export const simulateTick = (particle, config) => {
     config.height
   );
 
-  particle.vx += Math.cos(value) * config.force;
-  particle.vy += Math.sin(value) * config.force;
+  particle.vx += Math.cos(angle) * force * config.force;
+  particle.vy += Math.sin(angle) * force * config.force;
 
   particle.x += particle.vx;
   particle.y += particle.vy;
