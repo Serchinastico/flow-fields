@@ -3,6 +3,7 @@ import * as fitCurve from "./lib/fitCurve";
 import { simulateTick } from "./simulation";
 import { createParticles } from "./simulation";
 import rnd from "./random";
+import { deserializeConfig } from "./form";
 
 const SIMPLIFY_TOLERANCE = 10;
 const CURVE_FITTING_ERROR = 200;
@@ -11,10 +12,12 @@ const CURVE_FITTING_ERROR = 200;
  * Simulates all particles and exports their motion to SVG format
  * @returns {string} SVG contents
  */
-export const toSvg = (config) => {
+onmessage = ({ data }) => {
+  const config = deserializeConfig(data);
+
   rnd.reset();
 
-  const particles = createParticles(config.numPoints);
+  const particles = createParticles(config);
   const paths = [];
 
   /**
@@ -52,7 +55,7 @@ export const toSvg = (config) => {
     )
     .filter((path) => path.length > 0);
 
-  let svg = `<svg width="${window.innerWidth}" height="${window.innerHeight}" xmlns="http://www.w3.org/2000/svg">\n`;
+  let svg = `<svg width="${config.width}" height="${config.height}" xmlns="http://www.w3.org/2000/svg">\n`;
   for (const path of curvePaths) {
     const firstCurve = path[0];
 
@@ -67,5 +70,5 @@ export const toSvg = (config) => {
   }
   svg += `</svg>`;
 
-  return svg;
+  postMessage(svg);
 };

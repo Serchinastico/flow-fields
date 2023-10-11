@@ -2,6 +2,29 @@ import { getGradient } from "./color";
 import { getFlowField } from "./flow";
 import { hideNode, showNode } from "./dom";
 import rnd from "./random";
+import JSONfn from "./lib/jsonfn";
+
+/**
+ * Serialies the unserializable fields in the config by transforming
+ * the function definitions to a string using JSON
+ */
+export const serializeConfig = (config) => {
+  return {
+    ...config,
+    gradientFn: JSONfn.stringify(config.gradientFn),
+    customFlowFieldFunction: JSONfn.stringify(config.customFlowFieldFunction),
+    flowFieldFn: JSONfn.stringify(config.flowFieldFn),
+  };
+};
+
+export const deserializeConfig = (config) => {
+  return {
+    ...config,
+    gradientFn: JSONfn.parse(config.gradientFn),
+    customFlowFieldFunction: JSONfn.parse(config.customFlowFieldFunction),
+    flowFieldFn: JSONfn.parse(config.flowFieldFn),
+  };
+};
 
 export const form = () => {
   const form = document.querySelector("#form");
@@ -36,6 +59,8 @@ export const form = () => {
 
   const readConfig = () => {
     const baseConfig = {
+      width: window.innerWidth,
+      height: window.innerHeight,
       maxSteps: Number.parseInt(maxStepsInput.value),
       numPoints: Number.parseInt(numPointsInput.value),
       force: Number.parseFloat(forceInput.value),
@@ -49,10 +74,13 @@ export const form = () => {
       seed: Number.parseInt(seedInput.value),
     };
 
-    baseConfig.flowFieldFn = getFlowField(baseConfig.flowFieldFunction, {
+    const { generationData, fn } = getFlowField(baseConfig.flowFieldFunction, {
       resolution: baseConfig.resolution,
       customFn: baseConfig.customFlowFieldFunction,
     });
+
+    baseConfig.flowFieldFnData = generationData;
+    baseConfig.flowFieldFn = fn;
 
     return baseConfig;
   };

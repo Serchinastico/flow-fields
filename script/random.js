@@ -1,24 +1,34 @@
+import seedrandom from "./lib/seedrandom";
+
 const randomSeed = () => Math.round(Math.random() * 99999999);
 
 const rnd = () => {
   let seed = randomSeed();
-  let gen = new Math.seedrandom(seed);
+  let gen = null;
+
+  const getGen = () => {
+    if (gen === null) {
+      gen = seedrandom(seed);
+    }
+
+    return gen;
+  };
 
   const newSeed = () => {
     seed = randomSeed();
-    gen = new Math.seedrandom(seed);
+    gen = seedrandom(seed);
   };
 
   const setSeed = (newSeed) => {
     seed = newSeed;
-    gen = new Math.seedrandom(seed);
+    gen = seedrandom(seed);
   };
 
   const getSeed = () => seed;
 
   const reset = () => setSeed(seed);
 
-  return { random: () => gen(), getSeed, setSeed, reset, newSeed };
+  return { random: () => getGen()(), getSeed, setSeed, reset, newSeed };
 };
 
 export default rnd();

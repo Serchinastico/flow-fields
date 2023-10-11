@@ -34,10 +34,14 @@ const getFlowVectorFromBitmapFn =
  * @link https://en.wikipedia.org/wiki/Perlin_noise
  */
 const getPerlinNoiseVectorFn = ({ resolution }) => {
-  noise.seed(rnd.random());
+  const seed = rnd.random();
+  noise.seed(seed);
 
-  return (x, y) => {
-    return noise.perlin2(x * resolution, y * resolution) * Math.PI * 2;
+  return {
+    generationData: { resolution },
+    fn: ({ resolution }, x, y) => {
+      return noise.perlin2(x * resolution, y * resolution) * Math.PI * 2;
+    },
   };
 };
 
@@ -60,17 +64,20 @@ const getAttractorVectorFn = ({ resolution }) => {
   const c = rnd.random() * 4 - 2;
   const d = rnd.random() * 4 - 2;
 
-  return (x, y) => {
-    // scale down x and y
-    x = (x - window.innerWidth / 2) * resolution;
-    y = (y - window.innerHeight / 2) * resolution;
+  return {
+    generationData: { resolution, a, b, c, d },
+    fn: ({ resolution, a, b, c, d }, x, y, width, height) => {
+      // scale down x and y
+      x = (x - width / 2) * resolution;
+      y = (y - height / 2) * resolution;
 
-    // attactor gives new x, y for old one.
-    const x1 = Math.sin(a * y) + c * Math.cos(a * x);
-    const y1 = Math.sin(b * x) + d * Math.cos(b * y);
+      // attactor gives new x, y for old one.
+      const x1 = Math.sin(a * y) + c * Math.cos(a * x);
+      const y1 = Math.sin(b * x) + d * Math.cos(b * y);
 
-    // find angle from old to new. that's the value.
-    return Math.atan2(y1 - y, x1 - x);
+      // find angle from old to new. that's the value.
+      return Math.atan2(y1 - y, x1 - x);
+    },
   };
 };
 
@@ -84,17 +91,19 @@ const getAttractorVectorFn = ({ resolution }) => {
  * @returns {(x: number, y: number) => number}
  */
 const getCustomFlowFieldFn = ({ customFn }) => {
-  const fn = eval(`(x, y) => { return ${customFn}; }`);
-
-  return (x, y) => {
-    return fn(x, y);
+  return {
+    generationData: { customFn },
+    fn: ({ customFn }, x, y, width, height) => {
+      const fn = eval(`(x, y, width, height) => { return ${customFn}; }`);
+      return fn(x, y, width, height);
+    },
   };
 };
 
 /**
  * @param {"bitmap" | "perlin" | "attractor" | "custom"} type
  * @param {Object} data Depends on the specific type you are instantiating
- * @returns {(x: number, y: number) => number}
+ * @returns {(x: number, y: number, width: number, height: number) => number}
  */
 export const getFlowField = (type, data) => {
   switch (type) {

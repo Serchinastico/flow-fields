@@ -17,7 +17,13 @@ export const simulateTick = (particle, config) => {
    * 4. Update particle position if it went out of bounds making
    *    the plane a continuum
    */
-  const value = config.flowFieldFn(particle.x, particle.y);
+  const value = config.flowFieldFn(
+    config.flowFieldFnData,
+    particle.x,
+    particle.y,
+    config.width,
+    config.height
+  );
 
   particle.vx += Math.cos(value) * config.force;
   particle.vy += Math.sin(value) * config.force;
@@ -29,20 +35,20 @@ export const simulateTick = (particle, config) => {
 
   let didWrap = false;
 
-  if (particle.x > window.innerWidth) {
+  if (particle.x > config.width) {
     particle.x = 0;
     didWrap = true;
   }
-  if (particle.y > window.innerHeight) {
+  if (particle.y > config.height) {
     particle.y = 0;
     didWrap = true;
   }
   if (particle.x < 0) {
-    particle.x = window.innerWidth;
+    particle.x = config.width;
     didWrap = true;
   }
   if (particle.y < 0) {
-    particle.y = window.innerHeight;
+    particle.y = config.height;
     didWrap = true;
   }
 
@@ -54,13 +60,13 @@ export const simulateTick = (particle, config) => {
  * @param {number} count
  * @returns {{x: number, y: number, vx: number, vy: number}[]} The particles distributed randomly in the window
  */
-export const createParticles = (count) => {
+export const createParticles = (config) => {
   const particles = [];
 
-  for (let i = 0; i < count; i += 1) {
+  for (let i = 0; i < config.numPoints; i += 1) {
     particles.push({
-      x: rnd.random() * window.innerWidth,
-      y: rnd.random() * window.innerHeight,
+      x: rnd.random() * config.width,
+      y: rnd.random() * config.height,
       vx: 0,
       vy: 0,
     });

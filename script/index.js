@@ -2,9 +2,8 @@
  * @link https://medium.com/@bit101/flow-fields-part-i-3ebebc688fd8
  */
 
-import { form } from "./form";
+import { form, serializeConfig } from "./form";
 import { renderFrame } from "./render";
-import { toSvg } from "./svg";
 import { createParticles } from "./simulation";
 import { downloadFile } from "./download";
 
@@ -22,16 +21,19 @@ const main = () => {
   flowCanvas.width = window.innerWidth;
   flowCanvas.height = window.innerHeight;
 
+  const svgWorker = new Worker(new URL("svg.js", import.meta.url), {
+    type: "module",
+  });
   let renderFrameId = -1;
   const f = form();
   let step = 0;
-  let particles = createParticles(f.getConfig().numPoints);
+  let particles = createParticles(f.getConfig());
 
   document.querySelector("#restart").addEventListener("click", () => {
     f.refreshConfig();
 
     step = 0;
-    particles = createParticles(f.getConfig().numPoints);
+    particles = createParticles(f.getConfig());
     context.lineWidth = f.getConfig().penWidth;
 
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -47,7 +49,9 @@ const main = () => {
 
     for (let x = 0; x < window.innerWidth; x += 10) {
       for (let y = 0; y < window.innerHeight; y += 10) {
-        const value = f.getConfig().flowFieldFn(x, y);
+        const value = f
+          .getConfig()
+          .flowFieldFn(x, y, window.innerWidth, window.innerHeight);
 
         flowContext.save();
         flowContext.translate(x, y);
@@ -83,9 +87,12 @@ const main = () => {
     });
 
   document.querySelector("#save").addEventListener("click", () => {
-    const svg = toSvg(f.getConfig());
-    downloadFile(svg, "output.svg", "image/svg+xml");
+    svgWorker.postMessage(serializeConfig(f.getConfig()));
   });
+
+  svgWorker.onmessage = ({ data: svg }) => {
+    downloadFile(svg, "output.svg", "image/svg+xml");
+  };
 
   const render = () => {
     renderFrame(context, step, particles, f.getConfig());
