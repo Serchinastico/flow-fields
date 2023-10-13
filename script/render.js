@@ -23,13 +23,17 @@ const renderParticle = (context, color, particle, config) => {
 
 /**
  * Renders a single frame, simulating all particles in the process
+ * @param {CanvasRenderingContext2D} context
+ * @param {number} step
+ * @param {{x: number, y: number: vx: number, vy: number}[]} particles
+ * @param {Object} config
  */
 export const renderFrame = (context, step, particles, config) => {
   const color = config.gradientFn(step / config.maxSteps).hex();
 
-  particles.forEach((particle) =>
-    renderParticle(context, color, particle, config)
-  );
+  particles.forEach((particle) => {
+    renderParticle(context, color, particle, config);
+  });
 
   if (config.forceReduction > 0) {
     config.force *= 1 - config.forceReduction;

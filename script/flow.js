@@ -20,27 +20,29 @@ export const getPixel = (imageData, x, y) => {
  * @returns {(generationData: Object, x: number, y: number, width: number, height: number) => number}
  */
 const getFlowVectorFromImageFn = ({ imageData }) => {
-  return {
-    generationData: { imageData },
-    fn: ({ imageData }, x, y, width, height) => {
-      const px = Math.min(imageData.width - 1, Math.floor(x));
-      const py = Math.min(imageData.height - 1, Math.floor(y));
+  const luminances = [];
+  for (let y = 0; y < imageData.height; y++) {
+    for (let x = 0; x < imageData.width; x++) {
+      luminances.push(getPixel(imageData, x, y).luminance());
+    }
+  }
 
-      const luminance = getPixel(imageData, px, py).luminance();
+  return {
+    generationData: { imageData, luminances },
+    fn: ({ luminances }, x, y, width, height) => {
+      const px = Math.min(width - 1, Math.floor(x));
+      const py = Math.min(height - 1, Math.floor(y));
 
       let luminanceDirection = { x: 0, y: 0 };
 
-      for (let dx = -1; dx < 2; dx++) {
-        for (let dy = -1; dy < 2; dy++) {
+      const luminance = luminances[px + py * width];
+      for (let dx = -2; dx <= 2; dx++) {
+        for (let dy = -2; dy <= 2; dy++) {
           const dpx = px + dx;
           const dpy = py + dy;
 
           if (dpx > 0 && dpy > 0 && dpx < width && dpy < height) {
-            const neighbourLuminance = getPixel(
-              imageData,
-              dpx,
-              dpy
-            ).luminance();
+            const neighbourLuminance = luminances[dpx + dpy * width];
 
             const luminanceDiff = luminance - neighbourLuminance;
             luminanceDirection.x += luminanceDiff * dx;
@@ -49,16 +51,13 @@ const getFlowVectorFromImageFn = ({ imageData }) => {
         }
       }
 
-      const force =
-        20 *
-        Math.sqrt(
+      return {
+        force: Math.sqrt(
           luminanceDirection.x * luminanceDirection.x +
             luminanceDirection.y * luminanceDirection.y
-        );
-
-      return {
-        force,
-        angle: Math.atan2(luminanceDirection.x, luminanceDirection.y),
+        ),
+        angle:
+          Math.atan2(luminanceDirection.x, -luminanceDirection.y) - Math.PI / 2,
       };
     },
   };
