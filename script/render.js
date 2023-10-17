@@ -1,10 +1,16 @@
 import { simulateTick } from "./simulation";
+import { clamp } from "./math";
 
 /**
  * Renders aand simulates a single particle.
  */
 const renderParticle = (context, color, particle, config) => {
   context.strokeStyle = color;
+  context.lineWidth = clamp(
+    config.minPenWidth,
+    config.maxPenWidth,
+    Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy)
+  );
 
   context.beginPath();
   context.moveTo(particle.x, particle.y);

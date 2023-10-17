@@ -48,7 +48,8 @@ export const form = () => {
   const frictionInput = document.querySelector("#friction");
   const seedInput = document.querySelector("#seed");
   const randomizeSeedInput = document.querySelector("#randomize-seed");
-  const penWidthInput = document.querySelector("#pen-width");
+  const minPenWidthInput = document.querySelector("#min-pen-width");
+  const maxPenWidthInput = document.querySelector("#max-pen-width");
   const colorPaletteInput = document.querySelector("#color-palette");
   const flowFieldFunctionInput = document.querySelector("#flow-field-function");
   const resolutionContainer = document.querySelector("#resolution-container");
@@ -83,7 +84,8 @@ export const form = () => {
       force: Number.parseFloat(forceInput.value),
       forceReduction: Number.parseFloat(forceReductionInput.value),
       friction: Number.parseFloat(frictionInput.value),
-      penWidth: Number.parseFloat(penWidthInput.value),
+      minPenWidth: Number.parseFloat(minPenWidthInput.value),
+      maxPenWidth: Number.parseFloat(maxPenWidthInput.value),
       gradientFn: getGradient(colorPaletteInput.value),
       flowFieldFunction: flowFieldFunctionInput.value,
       resolution: Number.parseFloat(resolutionInput.value),
@@ -115,7 +117,7 @@ export const form = () => {
         hideNode(customFlowFieldFunctionContainer);
         hideNode(sourceImageContainer);
         break;
-      case "attractor":
+      case "clifford-attractor":
         showNode(resolutionContainer);
         hideNode(customFlowFieldFunctionContainer);
         hideNode(sourceImageContainer);

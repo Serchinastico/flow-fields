@@ -13,3 +13,7 @@ button {
 .maxh-75 {
   max-height: 75%;
 }
+
+.flex-1 {
+  flex: 1;
+}

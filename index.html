@@ -198,15 +198,34 @@
 
         <h2 class="mt4">Rendering</h2>
 
-        <label for="pen-width" class="f6 b db mb2 mt3">Pen Width</label>
-        <input
-          id="pen-width"
-          class="br2 ba b--black-40 pa2"
-          placeholder="Pen Width"
-          type="number"
-          aria-label="Pen Width"
-          value="0.3"
-        />
+        <div class="flex flex-row">
+          <div class="flex flex-column mr4 flex-1">
+            <label for="min-pen-width" class="f6 b db mb2">Min pen width</label>
+            <input
+              id="min-pen-width"
+              class="br2 ba b--black-40 pa2"
+              placeholder="Min pen Width"
+              type="number"
+              aria-label="Min pen Width"
+              value="0.3"
+            />
+          </div>
+          <div class="flex flex-column flex-1">
+            <label for="max-pen-width" class="f6 b db mb2">Max pen width</label>
+            <input
+              id="max-pen-width"
+              class="br2 ba b--black-40 pa2"
+              placeholder="Max pen Width"
+              type="number"
+              aria-label="Max pen Width"
+              value="2"
+            />
+          </div>
+        </div>
+        <small class="f6 black-60 db mt1"
+          >Particles are thicker when their speed is higher and thinner when
+          they go slow.</small
+        >
 
         <label for="color-palette" class="f6 b db mb2 mt3">Color palette</label>
         <select
@@ -240,7 +259,8 @@
           aria-label="Flow Field"
         >
           <option value="perlin" selected>Perlin Noise</option>
-          <option value="attractor">Clifford Attractor</option>
+          <option value="clifford-attractor">Clifford Attractor</option>
+          <option value="de-jong-attractor">Peter de Jong Attractor</option>
           <option value="image">Image</option>
           <option value="custom">Custom</option>
         </select>

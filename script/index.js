@@ -37,7 +37,6 @@ const main = () => {
 
     step = 0;
     particles = createParticles(f.getConfig());
-    context.lineWidth = f.getConfig().penWidth;
 
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -54,12 +53,13 @@ const main = () => {
       flowContext.putImageData(config.flowFieldFnData.imageData, 0, 0);
     }
 
+    const resolution = 16;
     const previousStrokeStyle = flowContext.strokeStyle;
     flowContext.lineWidth = 1;
     flowContext.strokeStyle = "#FA0F22";
 
-    for (let x = 0; x < window.innerWidth; x += 5) {
-      for (let y = 0; y < window.innerHeight; y += 5) {
+    for (let x = 0; x < window.innerWidth; x += resolution) {
+      for (let y = 0; y < window.innerHeight; y += resolution) {
         const { force, angle } = config.flowFieldFn(
           config.flowFieldFnData,
           x,
@@ -73,7 +73,10 @@ const main = () => {
         flowContext.rotate(angle);
         flowContext.beginPath();
         flowContext.moveTo(0, 0);
-        flowContext.lineTo(5 * force, 0);
+        flowContext.lineTo(resolution * force, 0);
+        flowContext.lineTo(resolution * force - 4, -4);
+        flowContext.moveTo(resolution * force, 0);
+        flowContext.lineTo(resolution * force - 4, 4);
         flowContext.stroke();
         flowContext.restore();
       }
@@ -118,7 +121,6 @@ const main = () => {
     }
   };
 
-  context.lineWidth = f.getConfig().penWidth;
   renderFrameId = requestAnimationFrame(render);
 };
 

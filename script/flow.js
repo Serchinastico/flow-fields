@@ -100,7 +100,7 @@ const getPerlinNoiseVectorFn = ({ resolution }) => {
  * @returns {(generationData: Object, x: number, y: number, width: number, height: number) => number}
  * @link https://paulbourke.net/fractals/clifford/
  */
-const getAttractorVectorFn = ({ resolution }) => {
+const getCliffordAttractorVectorFn = ({ resolution }) => {
   const a = rnd.random() * 4 - 2;
   const b = rnd.random() * 4 - 2;
   const c = rnd.random() * 4 - 2;
@@ -119,6 +119,42 @@ const getAttractorVectorFn = ({ resolution }) => {
 
       // find angle from old to new. that's the value.
       return { force: 1, angle: Math.atan2(y1 - y, x1 - x) };
+    },
+  };
+};
+
+/**
+ * Defines a flow field using Peter de Jong Attractors.
+ *
+ * @param {{resolution: number}} data
+ * @param data.resolution The bigger this number, the further away the
+ * flow field will look like
+ * @returns {(generationData: Object, x: number, y: number, width: number, height: number) => number}
+ * @link https://paulbourke.net/fractals/peterdejong/
+ */
+const getDeJongAttractorVectorFn = ({ resolution }) => {
+  const a = rnd.random() * 8 - 4;
+  const b = rnd.random() * 8 - 4;
+  const c = rnd.random() * 8 - 4;
+  const d = rnd.random() * 8 - 4;
+
+  return {
+    generationData: { resolution, a, b, c, d },
+    fn: ({ resolution, a, b, c, d }, x, y, width, height) => {
+      // scale down x and y
+      x = (x - width / 2) * resolution;
+      y = (y - height / 2) * resolution;
+
+      // attactor gives new x, y for old one.
+      const x1 = d * Math.sin(a * y) - Math.sin(b * x);
+      const y1 = c * Math.cos(a * x) + Math.cos(b * y);
+
+      // find angle from old to new. that's the value.
+      const vector = { x: x1 - x, y: y1 - y };
+      return {
+        force: Math.sqrt(vector.x * vector.x + vector.y * vector.y),
+        angle: Math.atan2(vector.y, vector.x),
+      };
     },
   };
 };
@@ -153,8 +189,10 @@ export const getFlowField = (type, data) => {
       return getFlowVectorFromImageFn(data);
     case "perlin":
       return getPerlinNoiseVectorFn(data);
-    case "attractor":
-      return getAttractorVectorFn(data);
+    case "clifford-attractor":
+      return getCliffordAttractorVectorFn(data);
+    case "de-jong-attractor":
+      return getDeJongAttractorVectorFn(data);
     case "custom":
       return getCustomFlowFieldFn(data);
   }
