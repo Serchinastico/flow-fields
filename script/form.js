@@ -132,6 +132,11 @@ export const form = () => {
         hideNode(customFlowFieldFunctionContainer);
         hideNode(sourceImageContainer);
         break;
+      case "de-jong-attractor":
+        showNode(resolutionContainer);
+        hideNode(customFlowFieldFunctionContainer);
+        hideNode(sourceImageContainer);
+        break;
       case "clifford-attractor":
         showNode(resolutionContainer);
         hideNode(customFlowFieldFunctionContainer);
