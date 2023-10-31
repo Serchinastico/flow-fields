@@ -14,6 +14,10 @@ button {
   min-width: 6rem;
 }
 
+.minh-2 {
+  min-height: 2rem;
+}
+
 .maxh-75 {
   max-height: 75%;
 }

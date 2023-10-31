@@ -39,6 +39,7 @@ const getImageData = (image) => {
 };
 
 export const form = () => {
+  const body = document.querySelector("body");
   const form = document.querySelector("#form");
   const imageNode = document.querySelector("#image");
   const maxStepsInput = document.querySelector("#max-steps");
@@ -52,6 +53,7 @@ export const form = () => {
   const outOfBoundsRecreateInput = document.querySelector("#oob-recreate");
   const minPenWidthInput = document.querySelector("#min-pen-width");
   const maxPenWidthInput = document.querySelector("#max-pen-width");
+  const backgroundColorInput = document.querySelector("#bg-color");
   const colorPaletteInput = document.querySelector("#color-palette");
   const flowFieldFunctionInput = document.querySelector("#flow-field-function");
   const resolutionContainer = document.querySelector("#resolution-container");
@@ -116,6 +118,10 @@ export const form = () => {
 
   resetSeed();
   let config = readConfig();
+
+  backgroundColorInput.addEventListener("change", () => {
+    body.style.backgroundColor = backgroundColorInput.value;
+  });
 
   flowFieldFunctionInput.addEventListener("change", () => {
     switch (flowFieldFunctionInput.value) {
