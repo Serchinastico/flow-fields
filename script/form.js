@@ -119,6 +119,8 @@ export const form = () => {
   resetSeed();
   let config = readConfig();
 
+  /** Background color config */
+  body.style.backgroundColor = backgroundColorInput.value;
   backgroundColorInput.addEventListener("change", () => {
     body.style.backgroundColor = backgroundColorInput.value;
   });
