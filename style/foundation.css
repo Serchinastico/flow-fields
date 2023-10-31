@@ -10,6 +10,10 @@ button {
   border: none;
 }
 
+.minw-6 {
+  min-width: 6rem;
+}
+
 .maxh-75 {
   max-height: 75%;
 }

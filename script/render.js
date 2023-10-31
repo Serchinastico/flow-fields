@@ -14,9 +14,9 @@ const renderParticle = (context, color, particle, config) => {
 
   context.beginPath();
   context.moveTo(particle.x, particle.y);
-  const { didWrap } = simulateTick(particle, config);
+  const { outOfBounds } = simulateTick(particle, config);
 
-  if (!didWrap) {
+  if (!outOfBounds) {
     /**
      * We only render particles if the didn't wrap around the screen.
      * If we render these paths, the screen will be filled with

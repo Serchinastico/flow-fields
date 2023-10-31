@@ -28,9 +28,9 @@ onmessage = ({ data }) => {
     paths.push([]);
 
     for (let step = 0; step < config.maxSteps; step++) {
-      const { didWrap } = simulateTick(particle, config);
+      const { outOfBounds } = simulateTick(particle, config);
 
-      if (didWrap) {
+      if (outOfBounds) {
         /**
          * The particle went around the screen so we finish the
          * current path and create a new one to prevent ugly artifacts

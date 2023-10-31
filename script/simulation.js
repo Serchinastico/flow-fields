@@ -1,12 +1,29 @@
 import rnd from "./random";
 
+const calculateOutOfBounds = (particle, config) => {
+  if (particle.x > config.width) {
+    return { outOfBounds: true, side: "east" };
+  }
+  if (particle.y > config.height) {
+    return { outOfBounds: true, side: "north" };
+  }
+  if (particle.x < 0) {
+    return { outOfBounds: true, side: "west" };
+  }
+  if (particle.y < 0) {
+    return { outOfBounds: true, side: "south" };
+  }
+
+  return { outOfBounds: false };
+};
+
 /**
  * Simulates the next tick of the particle given its position
  * and velocity. This procedure mutates the particle in place for
  * performance reasons.
  * @param {{x: number, y: number, vx: number, vy: number}} particle
  * @param {Object} config
- * @returns {{didWrap: boolean}} Returns an object with the results of the simulation
+ * @returns {{outOfBounds: boolean}} Returns an object with the results of the simulation
  */
 export const simulateTick = (particle, config) => {
   /**
@@ -33,26 +50,33 @@ export const simulateTick = (particle, config) => {
   particle.vx *= 1 - config.friction;
   particle.vy *= 1 - config.friction;
 
-  let didWrap = false;
+  const { outOfBounds, side } = calculateOutOfBounds(particle, config);
 
-  if (particle.x > config.width) {
-    particle.x = 0;
-    didWrap = true;
-  }
-  if (particle.y > config.height) {
-    particle.y = 0;
-    didWrap = true;
-  }
-  if (particle.x < 0) {
-    particle.x = config.width;
-    didWrap = true;
-  }
-  if (particle.y < 0) {
-    particle.y = config.height;
-    didWrap = true;
+  if (config.outOfBoundsBehavior === "wrap") {
+    switch (side) {
+      case "east":
+        particle.x = 0;
+        break;
+      case "north":
+        particle.y = 0;
+        break;
+      case "west":
+        particle.x = config.width;
+        break;
+      case "south":
+        particle.y = config.height;
+        break;
+    }
+  } else if (config.outOfBoundsBehavior === "recreate") {
+    if (outOfBounds) {
+      particle.x = rnd.random() * config.width;
+      particle.y = rnd.random() * config.height;
+      particle.vx = 0;
+      particle.vy = 0;
+    }
   }
 
-  return { didWrap };
+  return { outOfBounds };
 };
 
 /**

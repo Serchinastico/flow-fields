@@ -48,6 +48,8 @@ export const form = () => {
   const frictionInput = document.querySelector("#friction");
   const seedInput = document.querySelector("#seed");
   const randomizeSeedInput = document.querySelector("#randomize-seed");
+  const outOfBoundsWrapInput = document.querySelector("#oob-wrap");
+  const outOfBoundsRecreateInput = document.querySelector("#oob-recreate");
   const minPenWidthInput = document.querySelector("#min-pen-width");
   const maxPenWidthInput = document.querySelector("#max-pen-width");
   const colorPaletteInput = document.querySelector("#color-palette");
@@ -92,6 +94,11 @@ export const form = () => {
       customFlowFieldFunction: customFlowFieldFunctionInput.value,
       sourceImage: sourceImageInput.value,
       seed: Number.parseInt(seedInput.value),
+      outOfBoundsBehavior: outOfBoundsWrapInput.checked
+        ? "wrap"
+        : outOfBoundsRecreateInput.checked
+        ? "recreate"
+        : "nothing",
     };
 
     const { generationData, fn } = getFlowField(flowFieldFunctionInput.value, {
